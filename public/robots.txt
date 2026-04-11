@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ais-pre-eabt2eabw72dyjgkunzocv-17817896309.europe-west2.run.app/sitemap.xml
+# توجيه العناكب لأهم الأقسام
+Allow: /*?propertyType=مصنع
+Allow: /*?propertyType=أرض
+Allow: /*?activityType=أخرى
+
+Sitemap: https://gorgeous-dolphin-40dc02.netlify.app/sitemap.xml

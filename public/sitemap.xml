@@ -2,40 +2,33 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- الصفحة الرئيسية -->
   <url>
-    <loc>https://ais-pre-eabt2eabw72dyjgkunzocv-17817896309.europe-west2.run.app/</loc>
+    <loc>https://gorgeous-dolphin-40dc02.netlify.app/</loc>
     <lastmod>2026-04-11</lastmod>
     <changefreq>always</changefreq>
     <priority>1.0</priority>
   </url>
   
-  <!-- صفحة المصانع في 6 أكتوبر -->
+  <!-- صفحة المصانع -->
   <url>
-    <loc>https://ais-pre-eabt2eabw72dyjgkunzocv-17817896309.europe-west2.run.app/?propertyType=مصنع</loc>
+    <loc>https://gorgeous-dolphin-40dc02.netlify.app/?propertyType=مصنع</loc>
     <lastmod>2026-04-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <!-- صفحة الأراضي الصناعية في 6 أكتوبر -->
+  <!-- صفحة الأراضي الصناعية -->
   <url>
-    <loc>https://ais-pre-eabt2eabw72dyjgkunzocv-17817896309.europe-west2.run.app/?propertyType=أرض</loc>
+    <loc>https://gorgeous-dolphin-40dc02.netlify.app/?propertyType=أرض</loc>
     <lastmod>2026-04-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <!-- صفحة المخازن في 6 أكتوبر -->
+  <!-- صفحة المخازن -->
   <url>
-    <loc>https://ais-pre-eabt2eabw72dyjgkunzocv-17817896309.europe-west2.run.app/?activityType=أخرى</loc> <!-- نشاط أخرى يمثل المخازن حالياً -->
+    <loc>https://gorgeous-dolphin-40dc02.netlify.app/?activityType=أخرى</loc>
     <lastmod>2026-04-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
-  </url>
-
-  <!-- صفحة إضافة إعلان -->
-  <url>
-    <loc>https://ais-pre-eabt2eabw72dyjgkunzocv-17817896309.europe-west2.run.app/add</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
   </url>
 </urlset>
