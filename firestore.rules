@@ -1,0 +1,45 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.authorId;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if true; // Public profiles needed for ads
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+    }
+
+    match /ads/{adId} {
+      allow read: if true; // Ads are public
+      allow create: if isAuthenticated() && (request.resource.data.authorId == request.auth.uid || request.resource.data.authorId == 'admin');
+      // Allow update/delete if owner OR if authenticated (to allow the admin password feature from UI)
+      // Note: In a real production app, admin status should be verified via custom claims or a secure admin collection.
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+
+    match /settings/{document=**} {
+      allow read: if true; // Banner needs to be read by everyone
+      allow write: if isAuthenticated(); // Allow write if authenticated (admin check is client-side for now)
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "entities": {
+    "Ad": {
+      "title": "Ad",
+      "description": "An advertisement for a factory in 6th of October",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the ad" },
+        "description": { "type": "string", "description": "Detailed description" },
+        "price": { "type": "number", "description": "Price in Millions EGP" },
+        "area": { "type": "number", "description": "Area in square meters" },
+        "propertyType": { "type": "string", "description": "مصنع or أرض" },
+        "transactionType": { "type": "string", "description": "بيع or إيجار" },
+        "activityType": { "type": "string", "description": "Activity type like غذائي, هندسي, etc." },
+        "location": { "type": "string", "description": "Always 6th of October" },
+        "authorId": { "type": "string", "description": "UID of the creator" },
+        "authorName": { "type": "string", "description": "Name of the creator" },
+        "authorPhoto": { "type": "string", "description": "Photo URL of the creator" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "isFeatured": { "type": "boolean", "description": "Whether the ad is featured by admin" },
+        "phone": { "type": "string", "description": "Contact phone number" },
+        "whatsapp": { "type": "string", "description": "WhatsApp number" },
+        "image": { "type": "string", "description": "Base64 compressed image" }
+      },
+      "required": ["title", "description", "price", "area", "propertyType", "transactionType", "authorId", "createdAt"]
+    },
+    "User": {
+      "title": "User",
+      "description": "A user of the platform",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email"]
+    }
+  },
+  "firestore": {
+    "/ads/{adId}": {
+      "schema": "Ad",
+      "description": "Collection of factory ads"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of users"
+    }
+  }
+}
