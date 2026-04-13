@@ -249,6 +249,11 @@ export default function Home({ user }: { user: User | null }) {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    if (!user) {
+                      setActionMessage({ type: 'error', text: 'يجب تسجيل الدخول بحساب جوجل (زر دخول بالأسفل) لتتمكن من التعديل' });
+                      setTimeout(() => setActionMessage(null), 4000);
+                      return;
+                    }
                     toggleFeature(ad.id, !!ad.isFeatured);
                   }} 
                   className={`p-1.5 rounded-full shadow-sm ${ad.isFeatured ? 'bg-yellow-400 text-white' : 'bg-white text-gray-600'}`}
@@ -259,6 +264,11 @@ export default function Home({ user }: { user: User | null }) {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    if (!user) {
+                      setActionMessage({ type: 'error', text: 'يجب تسجيل الدخول بحساب جوجل (زر دخول بالأسفل) لتتمكن من الحذف' });
+                      setTimeout(() => setActionMessage(null), 4000);
+                      return;
+                    }
                     setAdToDelete(ad.id);
                   }} 
                   className="p-1.5 rounded-full bg-red-100 text-red-600 shadow-sm hover:bg-red-200 transition-colors"

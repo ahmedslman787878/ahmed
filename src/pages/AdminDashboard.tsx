@@ -224,6 +224,11 @@ export default function AdminDashboard() {
 
   const handleToggleFeatureAd = async () => {
     if (!searchedAd) return;
+    if (!user) {
+      setActionMessage({ type: 'error', text: 'يجب تسجيل الدخول بحساب جوجل أولاً لتتمكن من التعديل' });
+      setTimeout(() => setActionMessage(null), 4000);
+      return;
+    }
     try {
       const newStatus = !searchedAd.isFeatured;
       await updateDoc(doc(db, 'ads', searchedAd.id), {
@@ -242,6 +247,12 @@ export default function AdminDashboard() {
 
   const confirmDelete = async () => {
     if (!adToDelete) return;
+    if (!user) {
+      setActionMessage({ type: 'error', text: 'يجب تسجيل الدخول بحساب جوجل أولاً لتتمكن من الحذف' });
+      setTimeout(() => setActionMessage(null), 4000);
+      setAdToDelete(null);
+      return;
+    }
     try {
       await deleteDoc(doc(db, 'ads', adToDelete));
       setSearchedAd(null);
