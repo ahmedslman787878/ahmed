@@ -16,8 +16,16 @@ export const signInWithGoogle = async () => {
       // User cancelled the login, ignore the error
       return;
     }
+    if (error.code === 'auth/unauthorized-domain') {
+      alert("عذراً، هذا الرابط (النطاق) غير مصرح له بتسجيل الدخول. يجب إضافته في إعدادات Firebase (Authorized domains).");
+      return;
+    }
+    if (error.code === 'auth/network-request-failed') {
+      alert("فشل الاتصال بالإنترنت أو تم حظر نافذة تسجيل الدخول. يرجى التأكد من اتصالك بالإنترنت وإيقاف أي إضافات لحظر الإعلانات (AdBlocker) والمحاولة مرة أخرى.");
+      return;
+    }
     console.error("Error signing in with Google", error);
-    alert("حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.");
+    alert("حدث خطأ أثناء تسجيل الدخول: " + (error.message || "يرجى المحاولة مرة أخرى."));
   }
 };
 
