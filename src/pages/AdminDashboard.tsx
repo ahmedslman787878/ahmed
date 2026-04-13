@@ -190,11 +190,11 @@ export default function AdminDashboard() {
       await setDoc(doc(db, 'settings', 'banner'), {
         image: bannerImage,
         isActive: bannerActive
-      });
+      }, { merge: true }); // Use merge: true to avoid overwriting other fields if they exist, or create if it doesn't
       alert('تم حفظ البنر بنجاح');
     } catch (error) {
       console.error("Error saving banner:", error);
-      alert('حدث خطأ أثناء حفظ البنر');
+      alert('حدث خطأ أثناء حفظ البنر: ' + (error as Error).message);
     } finally {
       setBannerLoading(false);
     }
