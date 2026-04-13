@@ -11,8 +11,13 @@ export const googleProvider = new GoogleAuthProvider();
 export const signInWithGoogle = async () => {
   try {
     await signInWithPopup(auth, googleProvider);
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+      // User cancelled the login, ignore the error
+      return;
+    }
     console.error("Error signing in with Google", error);
+    alert("حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.");
   }
 };
 
