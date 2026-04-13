@@ -121,8 +121,12 @@ export default function Home({ user }: { user: User | null }) {
         isFeatured: !currentStatus,
         featuredAt: !currentStatus ? new Date().toISOString() : null
       });
+      setActionMessage({ type: 'success', text: !currentStatus ? 'تم تمييز الإعلان بنجاح' : 'تم إلغاء تمييز الإعلان' });
+      setTimeout(() => setActionMessage(null), 3000);
     } catch (error) {
       console.error("Error updating ad", error);
+      setActionMessage({ type: 'error', text: 'يجب تسجيل الدخول بحساب جوجل أولاً لتتمكن من التعديل' });
+      setTimeout(() => setActionMessage(null), 4000);
     }
   };
 
