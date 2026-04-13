@@ -39,8 +39,10 @@ export default function Header({ user }: { user: User | null }) {
     <>
       <header className="sticky top-0 z-50 bg-purple-800 px-4 py-3 flex items-center justify-between w-full mx-auto shadow-md rounded-b-2xl">
         <div className="flex items-center">
-          <Link to="/" className="bg-yellow-400 text-purple-900 px-3 py-1.5 rounded-lg font-black text-lg shadow-sm border border-yellow-500">
-            مصانع 6 اكتوبر
+          <Link to="/" className="flex items-center gap-2 bg-white text-purple-900 px-3 py-1.5 rounded-lg font-black text-lg shadow-sm border-2 border-yellow-400 hover:bg-gray-50 transition-colors">
+            <img src="https://i.ibb.co/6Hq724C/logo-square.png" alt="مصانع 6 أكتوبر" className="w-7 h-7 object-contain" />
+            <span className="hidden sm:inline">مصانع 6 اكتوبر</span>
+            <span className="sm:hidden text-base">مصانع 6 اكتوبر</span>
           </Link>
         </div>
         
