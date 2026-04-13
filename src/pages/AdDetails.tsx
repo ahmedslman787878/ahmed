@@ -63,7 +63,7 @@ export default function AdDetails({ user }: { user: User | null }) {
 
       {ad.image ? (
         <div className="w-full h-64 bg-gray-100 relative">
-          <img src={ad.image} alt={ad.title} className="w-full h-full object-cover" />
+          <img src={ad.image} alt={ad.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           <div className="absolute top-4 left-4 bg-purple-800 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
             {ad.transactionType}
           </div>
@@ -161,7 +161,7 @@ export default function AdDetails({ user }: { user: User | null }) {
           <div className="bg-gray-50 rounded-xl p-4 flex items-center justify-between border border-gray-100">
             <div className="w-16 h-16 bg-white rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden">
               {ad.authorPhoto ? (
-                <img src={ad.authorPhoto} alt={ad.authorName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <img src={ad.authorPhoto} alt={ad.authorName} loading="lazy" decoding="async" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               ) : (
                 <div className="text-2xl text-purple-800 font-bold">{ad.authorName.charAt(0)}</div>
               )}

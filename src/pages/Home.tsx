@@ -282,7 +282,7 @@ export default function Home({ user }: { user: User | null }) {
               {/* Image Thumbnail */}
               <div className="h-20 w-full bg-gray-100 relative">
                 {ad.image ? (
-                  <img src={ad.image} alt={ad.title} className="w-full h-full object-cover" />
+                  <img src={ad.image} alt={ad.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">
                     <MapPin className="w-8 h-8 opacity-20" />

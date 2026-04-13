@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc, deleteDoc, updateDoc, collection, addDoc, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 import { Search, Star, Trash2, User as UserIcon, Image as ImageIcon, ShieldAlert, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,6 +32,83 @@ export default function AdminDashboard() {
   const [isUpdatingImages, setIsUpdatingImages] = useState(false);
   const [isUpdatingPhones, setIsUpdatingPhones] = useState(false);
   const [isUpdatingPrices, setIsUpdatingPrices] = useState(false);
+  const [isCompressingImages, setIsCompressingImages] = useState(false);
+  const [compressProgress, setCompressProgress] = useState('');
+
+  const handleCompressExistingImages = async () => {
+    if (!auth.currentUser) {
+      setActionMessage({ type: 'error', text: 'يجب تسجيل الدخول بحساب جوجل أولاً' });
+      setTimeout(() => setActionMessage(null), 4000);
+      return;
+    }
+    if (!window.confirm('هل أنت متأكد من رغبتك في ضغط جميع الصور القديمة؟ قد تستغرق هذه العملية بعض الوقت.')) return;
+
+    setIsCompressingImages(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, 'ads'));
+      const adsToProcess = querySnapshot.docs.filter(doc => {
+        const data = doc.data();
+        // Only process if it has an image and it's a base64 string
+        return data.image && data.image.startsWith('data:image');
+      });
+
+      let processed = 0;
+      for (const docSnap of adsToProcess) {
+        const data = docSnap.data();
+        if (!data.image) continue;
+
+        setCompressProgress(`جاري ضغط صورة ${processed + 1} من ${adsToProcess.length}...`);
+
+        try {
+          const compressedBase64 = await new Promise<string>((resolve, reject) => {
+            const img = new Image();
+            img.src = data.image;
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              const MAX_WIDTH = 500;
+              const MAX_HEIGHT = 500;
+              let width = img.width;
+              let height = img.height;
+
+              if (width > height) {
+                if (width > MAX_WIDTH) {
+                  height *= MAX_WIDTH / width;
+                  width = MAX_WIDTH;
+                }
+              } else {
+                if (height > MAX_HEIGHT) {
+                  width *= MAX_HEIGHT / height;
+                  height = MAX_HEIGHT;
+                }
+              }
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx?.drawImage(img, 0, 0, width, height);
+              resolve(canvas.toDataURL('image/webp', 0.5));
+            };
+            img.onerror = reject;
+          });
+
+          // Only update if the new size is smaller
+          if (compressedBase64.length < data.image.length) {
+            await updateDoc(doc(db, 'ads', docSnap.id), { image: compressedBase64 });
+          }
+          processed++;
+        } catch (err) {
+          console.error("Failed to compress image for ad", docSnap.id, err);
+        }
+      }
+      setActionMessage({ type: 'success', text: `تم الانتهاء! تم ضغط ${processed} صورة بنجاح.` });
+    } catch (error) {
+      console.error("Error compressing images:", error);
+      setActionMessage({ type: 'error', text: 'حدث خطأ أثناء ضغط الصور' });
+    } finally {
+      setIsCompressingImages(false);
+      setCompressProgress('');
+      setTimeout(() => setActionMessage(null), 4000);
+    }
+  };
 
   const handleUpdateMockImages = async () => {
     setIsUpdatingImages(true);
@@ -224,7 +301,7 @@ export default function AdminDashboard() {
 
   const handleToggleFeatureAd = async () => {
     if (!searchedAd) return;
-    if (!user) {
+    if (!auth.currentUser) {
       setActionMessage({ type: 'error', text: 'يجب تسجيل الدخول بحساب جوجل أولاً لتتمكن من التعديل' });
       setTimeout(() => setActionMessage(null), 4000);
       return;
@@ -247,7 +324,7 @@ export default function AdminDashboard() {
 
   const confirmDelete = async () => {
     if (!adToDelete) return;
-    if (!user) {
+    if (!auth.currentUser) {
       setActionMessage({ type: 'error', text: 'يجب تسجيل الدخول بحساب جوجل أولاً لتتمكن من الحذف' });
       setTimeout(() => setActionMessage(null), 4000);
       setAdToDelete(null);
@@ -501,9 +578,22 @@ export default function AdminDashboard() {
         <button
           onClick={handleUpdatePrices}
           disabled={isUpdatingPrices}
-          className="w-full bg-blue-100 text-blue-800 font-bold py-3 rounded-xl hover:bg-blue-200 transition-colors flex items-center justify-center gap-2"
+          className="w-full bg-blue-100 text-blue-800 font-bold py-3 rounded-xl hover:bg-blue-200 transition-colors flex items-center justify-center gap-2 mb-3"
         >
           {isUpdatingPrices ? <Loader2 className="w-5 h-5 animate-spin" /> : 'تحديث الأسعار حسب المساحة (بيع وإيجار)'}
+        </button>
+
+        <button
+          onClick={handleCompressExistingImages}
+          disabled={isCompressingImages}
+          className="w-full bg-yellow-100 text-yellow-800 font-bold py-3 rounded-xl hover:bg-yellow-200 transition-colors flex items-center justify-center gap-2"
+        >
+          {isCompressingImages ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              {compressProgress || 'جاري الضغط...'}
+            </>
+          ) : 'ضغط وتحسين صور الإعلانات القديمة (WebP)'}
         </button>
       </div>
 
