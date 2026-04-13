@@ -184,12 +184,12 @@ export default function Home({ user }: { user: User | null }) {
         <div className="mb-5 space-y-2.5">
           <div className="flex gap-2">
             <div className="flex-1">
-              <div className="flex bg-gray-100 rounded-lg p-0.5">
+              <div className="flex bg-purple-50 rounded-lg p-1 border border-purple-100">
                 {['الكل', 'مصنع', 'أرض'].map(type => (
                   <button
                     key={type}
                     onClick={() => setFilterPropertyType(type)}
-                    className={`flex-1 py-1 rounded-md text-[10px] font-bold transition-colors ${filterPropertyType === type ? 'bg-white text-purple-800 shadow-sm' : 'text-gray-500'}`}
+                    className={`flex-1 py-1.5 rounded-md text-xs font-bold transition-all duration-300 ${filterPropertyType === type ? 'bg-purple-800 text-white shadow-md transform scale-[1.02]' : 'text-purple-700 hover:bg-purple-100'}`}
                   >
                     {type}
                   </button>
@@ -198,12 +198,12 @@ export default function Home({ user }: { user: User | null }) {
             </div>
             
             <div className="flex-1">
-              <div className="flex bg-gray-100 rounded-lg p-0.5">
+              <div className="flex bg-purple-50 rounded-lg p-1 border border-purple-100">
                 {['الكل', 'بيع', 'إيجار'].map(type => (
                   <button
                     key={type}
                     onClick={() => setFilterTransactionType(type)}
-                    className={`flex-1 py-1 rounded-md text-[10px] font-bold transition-colors ${filterTransactionType === type ? 'bg-white text-purple-800 shadow-sm' : 'text-gray-500'}`}
+                    className={`flex-1 py-1.5 rounded-md text-xs font-bold transition-all duration-300 ${filterTransactionType === type ? 'bg-purple-800 text-white shadow-md transform scale-[1.02]' : 'text-purple-700 hover:bg-purple-100'}`}
                   >
                     {type}
                   </button>
@@ -216,7 +216,7 @@ export default function Home({ user }: { user: User | null }) {
             <select
               value={filterActivityType}
               onChange={(e) => setFilterActivityType(e.target.value)}
-              className="flex-1 bg-gray-100 border-none rounded-lg px-2 py-1.5 text-xs font-bold text-gray-700 focus:ring-2 focus:ring-purple-800 outline-none"
+              className="flex-1 bg-purple-50 border border-purple-100 rounded-lg px-3 py-2 text-xs font-bold text-purple-900 focus:ring-2 focus:ring-purple-800 outline-none transition-colors"
             >
               <option value="الكل">كل الأنشطة</option>
               <option value="غذائي">غذائي</option>
