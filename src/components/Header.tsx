@@ -37,7 +37,7 @@ export default function Header({ user }: { user: User | null }) {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-purple-800 px-4 py-3 flex items-center justify-between max-w-md mx-auto shadow-md rounded-b-2xl">
+      <header className="sticky top-0 z-50 bg-purple-800 px-4 py-3 flex items-center justify-between w-full mx-auto shadow-md rounded-b-2xl">
         <div className="flex items-center">
           <Link to="/" className="bg-yellow-400 text-purple-900 px-3 py-1.5 rounded-lg font-black text-lg shadow-sm border border-yellow-500">
             مصانع 6 اكتوبر

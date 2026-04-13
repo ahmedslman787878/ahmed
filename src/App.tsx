@@ -65,30 +65,21 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-gray-50 pb-20 font-sans relative" dir="rtl">
-        {/* Top Bar */}
-        <div className="bg-purple-900 text-white text-[10px] sm:text-xs py-1.5 px-4 flex justify-between items-center max-w-md mx-auto">
-          <span className="font-medium">تواصل مع مكتب عقارات المتخصص في مصانع اكتوبر</span>
-          <a href="tel:01080379299" className="flex items-center gap-1 font-bold hover:text-purple-200 transition-colors">
-            <Phone className="w-3 h-3" />
-            <span dir="ltr">01080379299</span>
-          </a>
-        </div>
-
         <Header user={user} />
         
         {/* Global Banner */}
         {banner?.isActive && banner.image && (
           <a 
-            href="https://wa.me/201080379299"
+            href="https://wa.me/201033667481"
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full max-w-md mx-auto bg-white border-b border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+            className="block w-full mx-auto bg-white border-b border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
           >
-            <img src={banner.image} alt="إعلان" className="w-full h-20 object-cover" />
+            <img src={banner.image} alt="إعلان" className="w-full h-20 sm:h-32 md:h-40 object-cover" />
           </a>
         )}
 
-        <main className="max-w-md mx-auto bg-white min-h-screen shadow-sm">
+        <main className="w-full mx-auto bg-white min-h-screen shadow-sm">
           <Routes>
             <Route path="/" element={<Home user={user} />} />
             <Route path="/ad/:id" element={<AdDetails user={user} />} />

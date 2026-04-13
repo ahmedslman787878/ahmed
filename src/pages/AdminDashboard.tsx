@@ -23,6 +23,10 @@ export default function AdminDashboard() {
   const [searchedUser, setSearchedUser] = useState<any>(null);
   const [userSearchLoading, setUserSearchLoading] = useState(false);
 
+  // Modal & Toast state
+  const [adToDelete, setAdToDelete] = useState<string | null>(null);
+  const [actionMessage, setActionMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+
   // Seeding State
   const [isSeeding, setIsSeeding] = useState(false);
   const [isUpdatingImages, setIsUpdatingImages] = useState(false);
@@ -221,27 +225,30 @@ export default function AdminDashboard() {
   const handleToggleFeatureAd = async () => {
     if (!searchedAd) return;
     try {
+      const newStatus = !searchedAd.isFeatured;
       await updateDoc(doc(db, 'ads', searchedAd.id), {
-        isFeatured: !searchedAd.isFeatured
+        isFeatured: newStatus,
+        featuredAt: newStatus ? new Date().toISOString() : null
       });
-      setSearchedAd({ ...searchedAd, isFeatured: !searchedAd.isFeatured });
+      setSearchedAd({ ...searchedAd, isFeatured: newStatus, featuredAt: newStatus ? new Date().toISOString() : null });
     } catch (error) {
       console.error("Error updating ad:", error);
     }
   };
 
-  const handleDeleteAd = async () => {
-    if (!searchedAd) return;
-    if (window.confirm('هل أنت متأكد من حذف هذا الإعلان نهائياً؟')) {
-      try {
-        await deleteDoc(doc(db, 'ads', searchedAd.id));
-        setSearchedAd(null);
-        setAdSearchId('');
-        alert('تم حذف الإعلان بنجاح');
-      } catch (error) {
-        console.error("Error deleting ad:", error);
-      }
+  const confirmDelete = async () => {
+    if (!adToDelete) return;
+    try {
+      await deleteDoc(doc(db, 'ads', adToDelete));
+      setSearchedAd(null);
+      setAdSearchId('');
+      setActionMessage({ type: 'success', text: 'تم حذف الإعلان بنجاح' });
+    } catch (error) {
+      console.error("Error deleting ad:", error);
+      setActionMessage({ type: 'error', text: 'يجب تسجيل الدخول بحساب جوجل أولاً لتتمكن من الحذف' });
     }
+    setAdToDelete(null);
+    setTimeout(() => setActionMessage(null), 4000);
   };
 
   const handleSearchUser = async () => {
@@ -395,7 +402,7 @@ export default function AdminDashboard() {
                 {searchedAd.isFeatured ? 'إلغاء التمييز' : 'تمييز الإعلان'}
               </button>
               <button
-                onClick={handleDeleteAd}
+                onClick={() => setAdToDelete(searchedAd.id)}
                 className="flex-1 bg-red-100 text-red-600 py-2 rounded-lg font-bold flex items-center justify-center gap-1 hover:bg-red-200 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
@@ -484,6 +491,31 @@ export default function AdminDashboard() {
           {isUpdatingPrices ? <Loader2 className="w-5 h-5 animate-spin" /> : 'تحديث الأسعار حسب المساحة (بيع وإيجار)'}
         </button>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {adToDelete && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4" dir="rtl">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">تأكيد الحذف</h3>
+            <p className="text-gray-600 mb-6">هل أنت متأكد من رغبتك في حذف هذا الإعلان نهائياً؟</p>
+            <div className="flex gap-3">
+              <button onClick={confirmDelete} className="flex-1 bg-red-600 text-white py-2.5 rounded-xl font-bold hover:bg-red-700 transition-colors">
+                نعم، احذف
+              </button>
+              <button onClick={() => setAdToDelete(null)} className="flex-1 bg-gray-100 text-gray-800 py-2.5 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Action Message Toast */}
+      {actionMessage && (
+        <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 rounded-full shadow-lg font-bold text-sm whitespace-nowrap transition-all ${actionMessage.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+          {actionMessage.text}
+        </div>
+      )}
 
     </div>
   );

@@ -15,7 +15,7 @@ export default function BottomNav({ user }: { user: User | null }) {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-purple-800 pb-safe max-w-md mx-auto z-50 rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)]">
+    <nav className="fixed bottom-0 left-0 right-0 bg-purple-800 pb-safe w-full mx-auto z-50 rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)]">
       <div className="flex justify-between items-center h-16 px-2">
         <Link to="/" className={`flex flex-col items-center justify-center w-full h-full ${location.pathname === '/' ? 'text-yellow-400' : 'text-purple-200 hover:text-white'}`}>
           <Home className="w-6 h-6" />

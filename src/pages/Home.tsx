@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Link } from 'react-router-dom';
-import { Search, MapPin, Clock, Star, Trash2, Filter, ChevronDown, Maximize, AlertCircle } from 'lucide-react';
+import { Search, MapPin, Clock, Star, Trash2, Filter, ChevronDown, Maximize, AlertCircle, Phone } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { User } from 'firebase/auth';
@@ -18,6 +18,7 @@ interface Ad {
   location: string;
   createdAt: string;
   isFeatured?: boolean;
+  featuredAt?: string;
   image?: string;
 }
 
@@ -34,6 +35,10 @@ export default function Home({ user }: { user: User | null }) {
   // Pagination state
   const [visibleCount, setVisibleCount] = useState(10);
 
+  // Modal & Toast state
+  const [adToDelete, setAdToDelete] = useState<string | null>(null);
+  const [actionMessage, setActionMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+
   useEffect(() => {
     const handleAdminChange = () => setIsAdminMode(localStorage.getItem('isAdmin') === 'true');
     window.addEventListener('adminStatusChanged', handleAdminChange);
@@ -44,7 +49,64 @@ export default function Home({ user }: { user: User | null }) {
         id: doc.id,
         ...doc.data()
       })) as Ad[];
-      setAds(adsData);
+      
+      const now = Date.now();
+      const fifteenDaysMs = 15 * 24 * 60 * 60 * 1000;
+      const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+      
+      // Filter out ads older than 15 days for display, and compute active feature status
+      const validAds = adsData.filter(ad => {
+        const adDate = new Date(ad.createdAt).getTime();
+        return (now - adDate) <= fifteenDaysMs;
+      }).map(ad => {
+        let activeFeature = ad.isFeatured;
+        if (ad.isFeatured && ad.featuredAt) {
+          if ((now - new Date(ad.featuredAt).getTime()) > sevenDaysMs) {
+            activeFeature = false;
+          }
+        }
+        return { ...ad, isFeatured: activeFeature };
+      });
+      
+      // Sort: Featured first, then by createdAt desc
+      validAds.sort((a, b) => {
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+      
+      setAds(validAds);
+
+      // Auto-delete expired ads from database if admin
+      if (localStorage.getItem('isAdmin') === 'true') {
+        const expiredAds = adsData.filter(ad => {
+          const adDate = new Date(ad.createdAt).getTime();
+          return (now - adDate) > fifteenDaysMs;
+        });
+        
+        expiredAds.forEach(async (ad) => {
+          try {
+            await deleteDoc(doc(db, 'ads', ad.id));
+            console.log(`Auto-deleted expired ad: ${ad.id}`);
+          } catch (e) {
+            console.error("Failed to auto-delete ad", e);
+          }
+        });
+
+        // Auto-remove expired features
+        const expiredFeatures = adsData.filter(ad => {
+          if (!ad.isFeatured || !ad.featuredAt) return false;
+          return (now - new Date(ad.featuredAt).getTime()) > sevenDaysMs;
+        });
+
+        expiredFeatures.forEach(async (ad) => {
+          try {
+            await updateDoc(doc(db, 'ads', ad.id), { isFeatured: false, featuredAt: null });
+          } catch (e) {
+            console.error("Failed to remove expired feature", e);
+          }
+        });
+      }
     });
     
     return () => {
@@ -55,20 +117,26 @@ export default function Home({ user }: { user: User | null }) {
 
   const toggleFeature = async (adId: string, currentStatus: boolean) => {
     try {
-      await updateDoc(doc(db, 'ads', adId), { isFeatured: !currentStatus });
+      await updateDoc(doc(db, 'ads', adId), { 
+        isFeatured: !currentStatus,
+        featuredAt: !currentStatus ? new Date().toISOString() : null
+      });
     } catch (error) {
       console.error("Error updating ad", error);
     }
   };
 
-  const deleteAd = async (adId: string) => {
-    if (window.confirm('هل أنت متأكد من حذف هذا الإعلان؟')) {
-      try {
-        await deleteDoc(doc(db, 'ads', adId));
-      } catch (error) {
-        console.error("Error deleting ad", error);
-      }
+  const confirmDelete = async () => {
+    if (!adToDelete) return;
+    try {
+      await deleteDoc(doc(db, 'ads', adToDelete));
+      setActionMessage({ type: 'success', text: 'تم حذف الإعلان بنجاح' });
+    } catch (error) {
+      console.error("Error deleting ad", error);
+      setActionMessage({ type: 'error', text: 'يجب تسجيل الدخول بحساب جوجل أولاً لتتمكن من الحذف' });
     }
+    setAdToDelete(null);
+    setTimeout(() => setActionMessage(null), 4000);
   };
 
   const filteredAds = ads.filter(ad => {
@@ -84,6 +152,15 @@ export default function Home({ user }: { user: User | null }) {
   return (
     <div className="flex flex-col">
       <div className="p-4">
+        {/* Contact Banner */}
+        <div className="bg-purple-900 text-white text-[10px] sm:text-xs py-2 px-3 rounded-xl flex justify-between items-center mb-4 shadow-sm">
+          <span className="font-medium">تواصل مع مكتب عقارات المتخصص في مصانع اكتوبر</span>
+          <a href="tel:01080379299" className="flex items-center gap-1 font-bold hover:text-purple-200 transition-colors bg-purple-800 px-2 py-1 rounded-lg">
+            <Phone className="w-3 h-3" />
+            <span dir="ltr">01080379299</span>
+          </a>
+        </div>
+
         {/* Search Bar */}
         <div className="relative mb-3">
           <input
@@ -159,15 +236,29 @@ export default function Home({ user }: { user: User | null }) {
         </div>
 
         {/* Ads Grid */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
         {visibleAds.map(ad => (
           <div key={ad.id} className={`border rounded-xl overflow-hidden flex flex-col relative ${ad.isFeatured ? 'border-yellow-400 bg-yellow-50/30' : 'border-gray-200 bg-white'}`}>
             {isAdminMode && (
-              <div className="absolute top-2 left-2 flex gap-1 z-10">
-                <button onClick={() => toggleFeature(ad.id, !!ad.isFeatured)} className={`p-1.5 rounded-full shadow-sm ${ad.isFeatured ? 'bg-yellow-400 text-white' : 'bg-white text-gray-600'}`}>
+              <div className="absolute top-2 left-2 flex gap-1 z-20">
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleFeature(ad.id, !!ad.isFeatured);
+                  }} 
+                  className={`p-1.5 rounded-full shadow-sm ${ad.isFeatured ? 'bg-yellow-400 text-white' : 'bg-white text-gray-600'}`}
+                >
                   <Star className="w-3 h-3" />
                 </button>
-                <button onClick={() => deleteAd(ad.id)} className="p-1.5 rounded-full bg-red-100 text-red-600 shadow-sm">
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setAdToDelete(ad.id);
+                  }} 
+                  className="p-1.5 rounded-full bg-red-100 text-red-600 shadow-sm hover:bg-red-200 transition-colors"
+                >
                   <Trash2 className="w-3 h-3" />
                 </button>
               </div>
@@ -235,6 +326,31 @@ export default function Home({ user }: { user: User | null }) {
           عرض المزيد
           <ChevronDown className="w-5 h-5" />
         </button>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {adToDelete && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4" dir="rtl">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">تأكيد الحذف</h3>
+            <p className="text-gray-600 mb-6">هل أنت متأكد من رغبتك في حذف هذا الإعلان نهائياً؟</p>
+            <div className="flex gap-3">
+              <button onClick={confirmDelete} className="flex-1 bg-red-600 text-white py-2.5 rounded-xl font-bold hover:bg-red-700 transition-colors">
+                نعم، احذف
+              </button>
+              <button onClick={() => setAdToDelete(null)} className="flex-1 bg-gray-100 text-gray-800 py-2.5 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Action Message Toast */}
+      {actionMessage && (
+        <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 rounded-full shadow-lg font-bold text-sm whitespace-nowrap transition-all ${actionMessage.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+          {actionMessage.text}
+        </div>
       )}
       </div>
     </div>
