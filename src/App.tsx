@@ -67,7 +67,7 @@ export default function App() {
       <div className="min-h-screen bg-gray-50 pb-20 font-sans relative" dir="rtl">
         {/* Top Bar */}
         <div className="bg-purple-900 text-white text-[10px] sm:text-xs py-1.5 px-4 flex justify-between items-center max-w-md mx-auto">
-          <span className="font-medium">أكبر منصة للعقارات الصناعية في 6 أكتوبر</span>
+          <span className="font-medium">تواصل مع مكتب عقارات المتخصص في مصانع اكتوبر</span>
           <a href="tel:01080379299" className="flex items-center gap-1 font-bold hover:text-purple-200 transition-colors">
             <Phone className="w-3 h-3" />
             <span dir="ltr">01080379299</span>

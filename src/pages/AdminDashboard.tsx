@@ -165,7 +165,7 @@ export default function AdminDashboard() {
         let width = img.width;
         let height = img.height;
 
-        const MAX_WIDTH = 1200;
+        const MAX_WIDTH = 800; // Reduced from 1200 to ensure it fits in Firestore 1MB limit
         if (width > MAX_WIDTH) {
           height = Math.round((height * MAX_WIDTH) / width);
           width = MAX_WIDTH;
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, width, height);
 
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.5); // Reduced quality from 0.7 to 0.5
         setBannerImage(dataUrl);
       };
       img.src = event.target?.result as string;
