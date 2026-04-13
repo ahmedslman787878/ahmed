@@ -157,12 +157,15 @@ export default function Home({ user }: { user: User | null }) {
     <div className="flex flex-col">
       <div className="p-4">
         {/* Contact Banner */}
-        <div className="bg-purple-900 text-white text-[10px] sm:text-xs py-2 px-3 rounded-xl flex justify-between items-center mb-4 shadow-sm">
-          <span className="font-medium">تواصل مع مكتب عقارات المتخصص في مصانع اكتوبر</span>
-          <a href="tel:01080379299" className="flex items-center gap-1 font-bold hover:text-purple-200 transition-colors bg-purple-800 px-2 py-1 rounded-lg">
-            <Phone className="w-3 h-3" />
-            <span dir="ltr">01080379299</span>
-          </a>
+        <div className="relative rounded-xl overflow-hidden mb-4 p-[2px]">
+          <div className="absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0_160deg,#fbbf24_180deg,transparent_180deg_340deg,#fbbf24_360deg)]"></div>
+          <div className="relative bg-purple-900 text-white text-[10px] sm:text-xs py-2 px-3 rounded-xl flex justify-between items-center shadow-sm h-full">
+            <span className="font-medium">تواصل مع مكتب عقارات المتخصص في مصانع اكتوبر</span>
+            <a href="tel:01080379299" className="flex items-center gap-1 font-bold hover:text-purple-200 transition-colors bg-purple-800 px-2 py-1 rounded-lg z-10">
+              <Phone className="w-3 h-3" />
+              <span dir="ltr">01080379299</span>
+            </a>
+          </div>
         </div>
 
         {/* Search Bar */}
