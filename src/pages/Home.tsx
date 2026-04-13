@@ -342,6 +342,24 @@ export default function Home({ user }: { user: User | null }) {
         </button>
       )}
 
+      {/* SEO Text Block */}
+      <div className="mt-12 mb-6 bg-purple-50/50 p-6 rounded-2xl border border-purple-100">
+        <h1 className="text-xl font-black text-purple-900 mb-4 leading-tight">
+          مصانع للبيع في 6 أكتوبر وأراضي صناعية للاستثمار
+        </h1>
+        <div className="text-sm text-gray-700 leading-relaxed space-y-3">
+          <p>
+            إذا كنت تبحث عن <strong>مصانع للبيع في 6 أكتوبر</strong> أو <strong>أراضي صناعية للبيع 6 أكتوبر</strong>، فأنت في المكان الصحيح. نوفر لك أفضل <strong>فرص استثمار عقاري صناعي في مدينة 6 أكتوبر</strong>. سواء كنت تبحث عن <strong>مصانع للايجار في اكتوبر</strong> أو <strong>مخازن للبيع في 6اكتوبر</strong>، لدينا خيارات تناسب جميع الأنشطة.
+          </p>
+          <p>
+            كما يتوفر لدينا <strong>في 6 اكتوبر مخازن للايجار</strong> بمساحات متعددة، وعروض مميزة مثل <strong>مصنع غذائي للبيع في المنطقة الصناعية السادسة</strong>. نساعدك في معرفة <strong>سعر المتر الصناعي في 6 أكتوبر 2026</strong> بدقة، ونوفر لك <strong>مصانع جاهزة للتراخيص في أكتوبر</strong> لتبدأ إنتاجك فوراً.
+          </p>
+          <p>
+            نقدم خدمات متكاملة لأصحاب المصانع والمستثمرين تشمل استشارات <strong>تراخيص مصانع 6 أكتوبر</strong>، وخدمات <strong>مقاولات بناء مصانع في أكتوبر</strong>، بالإضافة إلى تخليص أوراق <strong>هيئة التنمية الصناعية 6 أكتوبر</strong>. استثمر الآن في أفضل <strong>أراضي استثمار صناعي في الجيزة</strong>.
+          </p>
+        </div>
+      </div>
+
       {/* Delete Confirmation Modal */}
       {adToDelete && (
         <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4" dir="rtl">
