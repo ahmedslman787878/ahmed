@@ -319,7 +319,7 @@ export default function Home({ user }: { user: User | null }) {
                 </div>
 
                 <div className="text-purple-800 font-bold text-sm mt-auto">
-                  {ad.price} <span className="text-xs">مليون ج.م</span>
+                  {ad.price} <span className="text-xs">{ad.transactionType === 'إيجار' ? 'ألف ج.م' : 'مليون ج.م'}</span>
                 </div>
               </div>
             </Link>

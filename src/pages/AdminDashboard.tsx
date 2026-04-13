@@ -32,6 +32,32 @@ export default function AdminDashboard() {
   const [isUpdatingImages, setIsUpdatingImages] = useState(false);
   const [isUpdatingPhones, setIsUpdatingPhones] = useState(false);
   const [isUpdatingPrices, setIsUpdatingPrices] = useState(false);
+  const [isFixingRentPrices, setIsFixingRentPrices] = useState(false);
+
+  const handleFixRentPrices = async () => {
+    setIsFixingRentPrices(true);
+    try {
+      const q = query(collection(db, 'ads'), where('transactionType', '==', 'إيجار'));
+      const snapshot = await getDocs(q);
+      
+      let count = 0;
+      for (const docSnap of snapshot.docs) {
+        const data = docSnap.data();
+        // If price is less than 10, it's likely still in millions (e.g., 0.05). Convert to thousands.
+        if (data.price < 10) {
+          const newPrice = Math.round(data.price * 1000);
+          await updateDoc(doc(db, 'ads', docSnap.id), { price: newPrice });
+          count++;
+        }
+      }
+      alert(`تم تحويل أسعار ${count} إعلان إيجار من الملايين إلى الآلاف بنجاح!`);
+    } catch (error) {
+      console.error("Error fixing rent prices:", error);
+      alert('حدث خطأ أثناء تعديل أسعار الإيجار');
+    } finally {
+      setIsFixingRentPrices(false);
+    }
+  };
   const [isCompressingImages, setIsCompressingImages] = useState(false);
   const [compressProgress, setCompressProgress] = useState('');
 
@@ -188,8 +214,8 @@ export default function AdminDashboard() {
           if (data.transactionType === 'بيع') {
             newPrice = data.area * 0.03; // 30,000 per meter
           } else if (data.transactionType === 'إيجار') {
-            newPrice = (data.area / 300) * 0.05; // 50,000 per 300 meters
-            newPrice = Math.round(newPrice * 1000) / 1000; // Round to 3 decimal places
+            newPrice = (data.area / 300) * 50; // 50,000 per 300 meters (in thousands)
+            newPrice = Math.round(newPrice);
           }
           
           await updateDoc(doc(db, 'ads', docSnap.id), { 
@@ -581,6 +607,14 @@ export default function AdminDashboard() {
           className="w-full bg-blue-100 text-blue-800 font-bold py-3 rounded-xl hover:bg-blue-200 transition-colors flex items-center justify-center gap-2 mb-3"
         >
           {isUpdatingPrices ? <Loader2 className="w-5 h-5 animate-spin" /> : 'تحديث الأسعار حسب المساحة (بيع وإيجار)'}
+        </button>
+
+        <button
+          onClick={handleFixRentPrices}
+          disabled={isFixingRentPrices}
+          className="w-full bg-orange-100 text-orange-800 font-bold py-3 rounded-xl hover:bg-orange-200 transition-colors flex items-center justify-center gap-2 mb-3"
+        >
+          {isFixingRentPrices ? <Loader2 className="w-5 h-5 animate-spin" /> : 'تحويل أسعار الإيجار الحالية من مليون إلى ألف'}
         </button>
 
         <button

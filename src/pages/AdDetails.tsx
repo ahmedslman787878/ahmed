@@ -97,7 +97,7 @@ export default function AdDetails({ user }: { user: User | null }) {
         </div>
 
         <div className="inline-block bg-purple-800 text-white font-bold text-xl px-4 py-2 rounded-lg mb-6 shadow-sm">
-          {ad.price} <span className="text-sm">مليون ج.م</span>
+          {ad.price} <span className="text-sm">{ad.transactionType === 'إيجار' ? 'ألف ج.م' : 'مليون ج.م'}</span>
         </div>
 
         {/* Properties Grid */}
