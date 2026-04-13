@@ -2,32 +2,32 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- الصفحة الرئيسية -->
   <url>
-    <loc>https://gorgeous-dolphin-40dc02.netlify.app/</loc>
-    <lastmod>2026-04-11</lastmod>
+    <loc>https://ahmed-theta-rouge.vercel.app/</loc>
+    <lastmod>2026-04-12</lastmod>
     <changefreq>always</changefreq>
     <priority>1.0</priority>
   </url>
   
   <!-- صفحة المصانع -->
   <url>
-    <loc>https://gorgeous-dolphin-40dc02.netlify.app/?propertyType=مصنع</loc>
-    <lastmod>2026-04-11</lastmod>
+    <loc>https://ahmed-theta-rouge.vercel.app/?propertyType=مصنع</loc>
+    <lastmod>2026-04-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- صفحة الأراضي الصناعية -->
   <url>
-    <loc>https://gorgeous-dolphin-40dc02.netlify.app/?propertyType=أرض</loc>
-    <lastmod>2026-04-11</lastmod>
+    <loc>https://ahmed-theta-rouge.vercel.app/?propertyType=أرض</loc>
+    <lastmod>2026-04-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- صفحة المخازن -->
   <url>
-    <loc>https://gorgeous-dolphin-40dc02.netlify.app/?activityType=أخرى</loc>
-    <lastmod>2026-04-11</lastmod>
+    <loc>https://ahmed-theta-rouge.vercel.app/?activityType=أخرى</loc>
+    <lastmod>2026-04-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>

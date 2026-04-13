@@ -6,4 +6,4 @@ Allow: /*?propertyType=مصنع
 Allow: /*?propertyType=أرض
 Allow: /*?activityType=أخرى
 
-Sitemap: https://gorgeous-dolphin-40dc02.netlify.app/sitemap.xml
+Sitemap: https://ahmed-theta-rouge.vercel.app/sitemap.xml
