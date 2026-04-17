@@ -49,6 +49,63 @@ export default function AdDetails({ user }: { user: User | null }) {
     }
   };
 
+  useEffect(() => {
+    if (!ad) return;
+
+    // Generate JSON-LD Structured Data
+    const actualPrice = ad.price * (ad.transactionType === 'إيجار' ? 1000 : 1000000);
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "RealEstateListing",
+      "name": ad.title,
+      "description": ad.description || ad.title,
+      "datePosted": ad.createdAt,
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "EGP",
+        "price": actualPrice
+      },
+      "floorSize": {
+        "@type": "QuantitativeValue",
+        "value": ad.area,
+        "unitCode": "MTK"
+      },
+      "jobLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": ad.location || "مدينة 6 أكتوبر",
+          "addressRegion": "الجيزة",
+          "addressCountry": "EG"
+        }
+      }
+    };
+
+    const scriptId = 'json-ld-real-estate';
+    let script = document.getElementById(scriptId) as HTMLScriptElement;
+    if (!script) {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.type = 'application/ld+json';
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(jsonLd);
+
+    // Update Meta Title & Description for the ad details
+    document.title = `${ad.title} | مصانع 6 اكتوبر`;
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', `${ad.propertyType} ${ad.transactionType} بمساحة ${ad.area} متر مربع. السعر: ${ad.price} ${ad.transactionType === 'إيجار' ? 'ألف' : 'مليون'} جنيهاً. ${ad.description.slice(0, 100)}...`);
+    }
+
+    return () => {
+      // Cleanup script when component unmounts
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
+    };
+  }, [ad]);
+
   if (!ad) return <div className="p-8 text-center">جاري التحميل...</div>;
 
   return (

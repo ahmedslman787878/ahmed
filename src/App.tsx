@@ -82,6 +82,8 @@ export default function App() {
         <main className="w-full mx-auto bg-white min-h-screen shadow-sm">
           <Routes>
             <Route path="/" element={<Home user={user} />} />
+            <Route path="/properties/:type/:action" element={<Home user={user} />} />
+            <Route path="/properties/:type" element={<Home user={user} />} />
             <Route path="/ad/:id" element={<AdDetails user={user} />} />
             <Route path="/add" element={<AddAd user={user} />} />
             <Route path="/my-ads" element={<MyAds user={user} />} />

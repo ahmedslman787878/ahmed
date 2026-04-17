@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Link } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Search, MapPin, Clock, Star, Trash2, Filter, ChevronDown, Maximize, AlertCircle, Phone } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
@@ -23,14 +23,54 @@ interface Ad {
 }
 
 export default function Home({ user }: { user: User | null }) {
+  const { type, action } = useParams<{ type?: string, action?: string }>();
+  const navigate = useNavigate();
+
+  const typeMapToAr: Record<string, string> = {
+    'factory': 'مصنع',
+    'land': 'أرض',
+  };
+
+  const actionMapToAr: Record<string, string> = {
+    'sale': 'بيع',
+    'rent': 'إيجار',
+  };
+
+  const typeMapToEn: Record<string, string> = {
+    'مصنع': 'factory',
+    'أرض': 'land',
+  };
+
+  const actionMapToEn: Record<string, string> = {
+    'بيع': 'sale',
+    'إيجار': 'rent',
+  };
+
   const [ads, setAds] = useState<Ad[]>([]);
   const [isAdminMode, setIsAdminMode] = useState(localStorage.getItem('isAdmin') === 'true');
   
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterPropertyType, setFilterPropertyType] = useState('الكل');
-  const [filterTransactionType, setFilterTransactionType] = useState('الكل');
+  const [filterPropertyType, setFilterPropertyType] = useState(typeMapToAr[type || ''] || 'الكل');
+  const [filterTransactionType, setFilterTransactionType] = useState(actionMapToAr[action || ''] || 'الكل');
   const [filterActivityType, setFilterActivityType] = useState('الكل');
+
+  useEffect(() => {
+    setFilterPropertyType(typeMapToAr[type || ''] || 'الكل');
+    setFilterTransactionType(actionMapToAr[action || ''] || 'الكل');
+  }, [type, action]);
+
+  const updateUrl = (newArType: string, newArAction: string) => {
+    const tEn = typeMapToEn[newArType] || 'all';
+    const aEn = actionMapToEn[newArAction] || 'all';
+    if (tEn === 'all' && aEn === 'all') {
+      navigate('/');
+    } else if (aEn === 'all') {
+      navigate(`/properties/${tEn}`);
+    } else {
+      navigate(`/properties/${tEn}/${aEn}`);
+    }
+  };
   
   // Pagination state
   const [visibleCount, setVisibleCount] = useState(10);
@@ -151,6 +191,25 @@ export default function Home({ user }: { user: User | null }) {
     return matchesSearch && matchesProp && matchesTrans && matchesAct;
   });
 
+  // Generate dynamic metadata
+  useEffect(() => {
+    let titleProp = 'مصانع وأراضي صناعية';
+    if (filterPropertyType === 'مصنع') titleProp = 'مصانع';
+    else if (filterPropertyType === 'أرض') titleProp = 'أراضي صناعية';
+
+    let titleTrans = 'للبيع والإيجار';
+    if (filterTransactionType === 'بيع') titleTrans = 'للبيع';
+    else if (filterTransactionType === 'إيجار') titleTrans = 'للإيجار';
+
+    const newTitle = `${titleProp} ${titleTrans} في مدينة 6 أكتوبر | مصانع 6 اكتوبر`;
+    document.title = newTitle;
+
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', `اكتشف أفضل فرص الاستثمار العقاري الصناعي في مصر. متوفر حالياً ${filteredAds.length} عرض مميز لـ ${titleProp} ${titleTrans} في المنطقة الصناعية بمدينة 6 أكتوبر. تواصل معنا الآن للحصول على أفضل الأسعار والتفاصيل.`);
+    }
+  }, [filterPropertyType, filterTransactionType, filteredAds.length]);
+
   const visibleAds = filteredAds.slice(0, visibleCount);
 
   return (
@@ -188,7 +247,7 @@ export default function Home({ user }: { user: User | null }) {
                 {['الكل', 'مصنع', 'أرض'].map(type => (
                   <button
                     key={type}
-                    onClick={() => setFilterPropertyType(type)}
+                    onClick={() => updateUrl(type, filterTransactionType)}
                     className={`flex-1 py-1.5 rounded-md text-xs font-bold transition-all duration-300 ${filterPropertyType === type ? 'bg-purple-800 text-white shadow-md transform scale-[1.02]' : 'text-purple-700 hover:bg-purple-100'}`}
                   >
                     {type}
@@ -202,7 +261,7 @@ export default function Home({ user }: { user: User | null }) {
                 {['الكل', 'بيع', 'إيجار'].map(type => (
                   <button
                     key={type}
-                    onClick={() => setFilterTransactionType(type)}
+                    onClick={() => updateUrl(filterPropertyType, type)}
                     className={`flex-1 py-1.5 rounded-md text-xs font-bold transition-all duration-300 ${filterTransactionType === type ? 'bg-purple-800 text-white shadow-md transform scale-[1.02]' : 'text-purple-700 hover:bg-purple-100'}`}
                   >
                     {type}
@@ -230,9 +289,8 @@ export default function Home({ user }: { user: User | null }) {
             {(filterPropertyType !== 'الكل' || filterTransactionType !== 'الكل' || filterActivityType !== 'الكل') && (
               <button 
                 onClick={() => { 
-                  setFilterPropertyType('الكل'); 
-                  setFilterTransactionType('الكل'); 
                   setFilterActivityType('الكل'); 
+                  navigate('/');
                 }}
                 className="text-[10px] text-red-500 font-bold px-2 py-1.5 bg-red-50 rounded-lg whitespace-nowrap"
               >
