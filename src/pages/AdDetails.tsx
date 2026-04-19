@@ -98,6 +98,15 @@ export default function AdDetails({ user }: { user: User | null }) {
       metaDescription.setAttribute('content', `${ad.propertyType} ${ad.transactionType} بمساحة ${ad.area} متر مربع. السعر: ${ad.price} ${ad.transactionType === 'إيجار' ? 'ألف' : 'مليون'} جنيهاً. ${ad.description.slice(0, 100)}...`);
     }
 
+    // Dynamic canonical URL
+    let canonicalTag = document.querySelector('link[rel="canonical"]');
+    if (!canonicalTag) {
+      canonicalTag = document.createElement('link');
+      canonicalTag.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalTag);
+    }
+    canonicalTag.setAttribute('href', window.location.origin + window.location.pathname);
+
     return () => {
       // Cleanup script when component unmounts
       if (document.head.contains(script)) {
@@ -120,7 +129,7 @@ export default function AdDetails({ user }: { user: User | null }) {
 
       {ad.image ? (
         <div className="w-full h-64 bg-gray-100 relative">
-          <img src={ad.image} alt={ad.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+          <img src={ad.image} alt={`${ad.propertyType} ${ad.transactionType} في ${ad.location} - ${ad.title}`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           <div className="absolute top-4 left-4 bg-purple-800 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
             {ad.transactionType}
           </div>

@@ -116,37 +116,6 @@ export default function Home({ user }: { user: User | null }) {
       });
       
       setAds(validAds);
-
-      // Auto-delete expired ads from database if admin
-      if (localStorage.getItem('isAdmin') === 'true') {
-        const expiredAds = adsData.filter(ad => {
-          const adDate = new Date(ad.createdAt).getTime();
-          return (now - adDate) > fifteenDaysMs;
-        });
-        
-        expiredAds.forEach(async (ad) => {
-          try {
-            await deleteDoc(doc(db, 'ads', ad.id));
-            console.log(`Auto-deleted expired ad: ${ad.id}`);
-          } catch (e) {
-            console.error("Failed to auto-delete ad", e);
-          }
-        });
-
-        // Auto-remove expired features
-        const expiredFeatures = adsData.filter(ad => {
-          if (!ad.isFeatured || !ad.featuredAt) return false;
-          return (now - new Date(ad.featuredAt).getTime()) > sevenDaysMs;
-        });
-
-        expiredFeatures.forEach(async (ad) => {
-          try {
-            await updateDoc(doc(db, 'ads', ad.id), { isFeatured: false, featuredAt: null });
-          } catch (e) {
-            console.error("Failed to remove expired feature", e);
-          }
-        });
-      }
     });
     
     return () => {
@@ -193,21 +162,43 @@ export default function Home({ user }: { user: User | null }) {
 
   // Generate dynamic metadata
   useEffect(() => {
-    let titleProp = 'مصانع وأراضي صناعية';
-    if (filterPropertyType === 'مصنع') titleProp = 'مصانع';
-    else if (filterPropertyType === 'أرض') titleProp = 'أراضي صناعية';
+    let newTitle = '';
+    
+    // Exact mapping for the home page (no filters) to match the exact requested title
+    if (filterPropertyType === 'الكل' && filterTransactionType === 'الكل') {
+      newTitle = 'مصانع للبيع في 6 أكتوبر | أراضي صناعية ومخازن للاستثمار';
+    } else {
+      let titleProp = 'مصانع وأراضي صناعية';
+      if (filterPropertyType === 'مصنع') titleProp = 'مصانع';
+      else if (filterPropertyType === 'أرض') titleProp = 'أراضي صناعية';
 
-    let titleTrans = 'للبيع والإيجار';
-    if (filterTransactionType === 'بيع') titleTrans = 'للبيع';
-    else if (filterTransactionType === 'إيجار') titleTrans = 'للإيجار';
-
-    const newTitle = `${titleProp} ${titleTrans} في مدينة 6 أكتوبر | مصانع 6 اكتوبر`;
+      let titleTrans = 'للاستثمار';
+      if (filterTransactionType === 'بيع') titleTrans = 'للبيع';
+      else if (filterTransactionType === 'إيجار') titleTrans = 'للإيجار';
+      
+      newTitle = `${titleProp} ${titleTrans} في 6 أكتوبر | ومخازن للاستثمار`;
+    }
+    
     document.title = newTitle;
 
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', `اكتشف أفضل فرص الاستثمار العقاري الصناعي في مصر. متوفر حالياً ${filteredAds.length} عرض مميز لـ ${titleProp} ${titleTrans} في المنطقة الصناعية بمدينة 6 أكتوبر. تواصل معنا الآن للحصول على أفضل الأسعار والتفاصيل.`);
+      if (filterPropertyType === 'الكل' && filterTransactionType === 'الكل') {
+        metaDescription.setAttribute('content', `نقدم خدمات متكاملة للمستثمرين في مدينة 6 أكتوبر: بيع وشراء المصانع، أراضي صناعية جاهزة للتراخيص، ومخازن للإيجار في المنطقة الصناعية السادسة وامتداد المنطقة الصناعية الثالثة. بوابتك للاستثمار الصناعي الناجح. تواصل معنا الآن: 01080379299`);
+      } else {
+        metaDescription.setAttribute('content', `اكتشف أفضل فرص الاستثمار العقاري الصناعي. متوفر حالياً ${filteredAds.length} عرض مميز لـ ${titleProp} ${titleTrans} في المنطقة الصناعية السادسة وامتداد المنطقة الصناعية الثالثة بمدينة 6 أكتوبر. تواصل معنا الآن: 01080379299`);
+      }
     }
+
+    // Dynamic canonical URL to prevent duplicate content warnings from Google
+    let canonicalTag = document.querySelector('link[rel="canonical"]');
+    if (!canonicalTag) {
+      canonicalTag = document.createElement('link');
+      canonicalTag.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalTag);
+    }
+    canonicalTag.setAttribute('href', window.location.origin + window.location.pathname);
+
   }, [filterPropertyType, filterTransactionType, filteredAds.length]);
 
   const visibleAds = filteredAds.slice(0, visibleCount);
@@ -215,6 +206,11 @@ export default function Home({ user }: { user: User | null }) {
   return (
     <div className="flex flex-col">
       <div className="p-4">
+        {/* SEO Main Heading H1 */}
+        <h1 className="text-xl font-bold text-gray-900 mb-4 px-1 leading-snug">
+          مصانع للبيع في 6 أكتوبر وأراضي صناعية للاستثمار
+        </h1>
+
         {/* Contact Banner */}
         <div className="relative rounded-xl overflow-hidden mb-4 p-[2px]">
           <div className="absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0_160deg,#fbbf24_180deg,transparent_180deg_340deg,#fbbf24_360deg)]"></div>
@@ -343,7 +339,7 @@ export default function Home({ user }: { user: User | null }) {
               {/* Image Thumbnail */}
               <div className="h-20 w-full bg-gray-100 relative">
                 {ad.image ? (
-                  <img src={ad.image} alt={ad.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                  <img src={ad.image} alt={`${ad.propertyType} ${ad.transactionType} في ${ad.location} - ${ad.title}`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">
                     <MapPin className="w-8 h-8 opacity-20" />
