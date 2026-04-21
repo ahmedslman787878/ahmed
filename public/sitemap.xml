@@ -3,31 +3,31 @@
   <!-- الصفحة الرئيسية -->
   <url>
     <loc>https://ahmed-theta-rouge.vercel.app/</loc>
-    <lastmod>2026-04-12</lastmod>
+    <lastmod>2026-04-21</lastmod>
     <changefreq>always</changefreq>
     <priority>1.0</priority>
   </url>
   
   <!-- صفحة المصانع -->
   <url>
-    <loc>https://ahmed-theta-rouge.vercel.app/?propertyType=مصنع</loc>
-    <lastmod>2026-04-12</lastmod>
+    <loc>https://ahmed-theta-rouge.vercel.app/?propertyType=%D9%85%D8%B5%D9%86%D8%B9</loc>
+    <lastmod>2026-04-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- صفحة الأراضي الصناعية -->
   <url>
-    <loc>https://ahmed-theta-rouge.vercel.app/?propertyType=أرض</loc>
-    <lastmod>2026-04-12</lastmod>
+    <loc>https://ahmed-theta-rouge.vercel.app/?propertyType=%D8%A3%D8%B1%D8%B6</loc>
+    <lastmod>2026-04-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- صفحة المخازن -->
   <url>
-    <loc>https://ahmed-theta-rouge.vercel.app/?activityType=أخرى</loc>
-    <lastmod>2026-04-12</lastmod>
+    <loc>https://ahmed-theta-rouge.vercel.app/?activityType=%D8%A3%D8%AE%D8%B1%D9%89</loc>
+    <lastmod>2026-04-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>

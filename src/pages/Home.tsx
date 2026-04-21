@@ -164,18 +164,18 @@ export default function Home({ user }: { user: User | null }) {
   useEffect(() => {
     let newTitle = '';
     
+    let titleProp = 'مصانع وأراضي صناعية';
+    if (filterPropertyType === 'مصنع') titleProp = 'مصانع';
+    else if (filterPropertyType === 'أرض') titleProp = 'أراضي صناعية';
+
+    let titleTrans = 'للاستثمار';
+    if (filterTransactionType === 'بيع') titleTrans = 'للبيع';
+    else if (filterTransactionType === 'إيجار') titleTrans = 'للإيجار';
+
     // Exact mapping for the home page (no filters) to match the exact requested title
     if (filterPropertyType === 'الكل' && filterTransactionType === 'الكل') {
       newTitle = 'مصانع للبيع في 6 أكتوبر | أراضي صناعية ومخازن للاستثمار';
     } else {
-      let titleProp = 'مصانع وأراضي صناعية';
-      if (filterPropertyType === 'مصنع') titleProp = 'مصانع';
-      else if (filterPropertyType === 'أرض') titleProp = 'أراضي صناعية';
-
-      let titleTrans = 'للاستثمار';
-      if (filterTransactionType === 'بيع') titleTrans = 'للبيع';
-      else if (filterTransactionType === 'إيجار') titleTrans = 'للإيجار';
-      
       newTitle = `${titleProp} ${titleTrans} في 6 أكتوبر | ومخازن للاستثمار`;
     }
     
@@ -197,7 +197,8 @@ export default function Home({ user }: { user: User | null }) {
       canonicalTag.setAttribute('rel', 'canonical');
       document.head.appendChild(canonicalTag);
     }
-    canonicalTag.setAttribute('href', window.location.origin + window.location.pathname);
+    // Include search parameters so that parameterized URLs sent in sitemap can be fully indexed by Google
+    canonicalTag.setAttribute('href', window.location.origin + window.location.pathname + window.location.search);
 
   }, [filterPropertyType, filterTransactionType, filteredAds.length]);
 
